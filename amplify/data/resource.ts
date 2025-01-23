@@ -1,4 +1,4 @@
-import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
+import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -7,11 +7,25 @@ specifies that any unauthenticated user can "create", "read", "update",
 and "delete" any "Todo" records.
 =========================================================================*/
 const schema = a.schema({
-  Todo: a
+  Post: a
     .model({
-      content: a.string(),
+      title: a.string().required(),
+      comments: a.hasMany("Comment", "postId"),
+      owner: a
+        .string()
+        .authorization((allow) => [allow.owner().to(["read", "delete","create","update"])]),
     })
-    .authorization((allow) => [allow.guest()]),
+    .authorization((allow) => [allow.guest().to(["read"]), allow.owner().to(["create","delete","read", "update"])]),
+  Comment: a
+    .model({
+      content: a.string().required(),
+      postId: a.id().required(),
+      post: a.belongsTo("Post", "postId"),
+      owner: a
+        .string()
+        .authorization((allow) => [allow.owner().to(["read", "delete"])]),
+    })
+    .authorization((allow) => [allow.guest().to(["read"]), allow.owner()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
@@ -19,11 +33,14 @@ export type Schema = ClientSchema<typeof schema>;
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: 'iam',
+    defaultAuthorizationMode: "userPool",
+    apiKeyAuthorizationMode: {
+      expiresInDays: 30,
+    },
   },
 });
 
-/*== STEP 2 ===============================================================
+/*== STEP 2 =============================================================== 
 Go to your frontend source code. From your client-side code, generate a
 Data client to make CRUDL requests to your table. (THIS SNIPPET WILL ONLY
 WORK IN THE FRONTEND CODE FILE.)

@@ -7,9 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "sandbox": "npx ampx sandbox --profile Experenta --identifier angel"
+    "sandbox": "npx ampx sandbox --profile Experenta --identifier angel",
+    "awsauth":"aws sso login --profile Experenta"
   },
   "dependencies": {
+    "@aws-amplify/adapter-nextjs": "^1.4.1",
+    "@aws-amplify/ui-react": "^6.9.0",
     "aws-amplify": "^6.12.1",
     "next": "15.1.5",
     "react": "^19.0.0",
