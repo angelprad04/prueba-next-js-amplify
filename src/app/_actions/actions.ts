@@ -45,7 +45,7 @@ export async function onDeletePost(id: string) {
 // }
 
 export async function createPost(formData: FormData) {
-  const title = formData.get("title");
+  const title = formData.get("title1");
   console.log("Title:", title);
 
   if (title === null) {
